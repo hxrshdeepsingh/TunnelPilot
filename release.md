@@ -27,13 +27,7 @@ Verify:
 upx -t .\tunnelpilotv3.exe
 ```
 
-Expected:
-
-```text
-[OK]
-```
-
-Run the app and test it.
+## 3. create setup file using inno
 
 ## 3. Create MSIX
 
@@ -57,7 +51,9 @@ Example:
 
 Do not change the package identity.
 
-## 4. Update Microsoft Store
+## 4. unpack the generated msix file and replace the assets folder with the assets folder we have in our dir
+
+## 5. Update Microsoft Store
 
 1. Open **Microsoft Partner Center**.
 2. Open **TunnelPilot**.

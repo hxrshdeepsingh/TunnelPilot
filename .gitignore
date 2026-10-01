@@ -9,3 +9,5 @@ build/android/overlay.json
 build/android/gen/
 
 release.md
+installer/
+bin/
