@@ -1,4 +1,5 @@
 .task
+bin
 frontend/dist
 frontend/node_modules
 build/linux/appimage/build
@@ -10,4 +11,3 @@ build/android/gen/
 
 release.md
 installer/
-bin/

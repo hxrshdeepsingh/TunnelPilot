@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"net/http"
 	"fmt"
 	"io"
 	"os"
@@ -20,13 +21,26 @@ type TunnelService struct {
 	procs map[int]*exec.Cmd
 }
 
+func newHiddenCommand(name string, args ...string) *exec.Cmd {
+	cmd := exec.Command(name, args...)
+
+	if stdruntime.GOOS == "windows" {
+		cmd.SysProcAttr = &syscall.SysProcAttr{
+			HideWindow:    true,
+			CreationFlags: 0x08000000,
+		}
+	}
+
+	return cmd
+}
+
 func (s *TunnelService) RunCommands(cmd string) string {
-	cloudflared, err := getCloudflaredPath()
+	cloudflared, err := ensureCloudflared()
 	if err != nil {
 		return err.Error()
 	}
 
-	out, err := exec.Command(cloudflared, cmd).CombinedOutput()
+	out, err := newHiddenCommand(cloudflared, cmd).CombinedOutput()
 	if err != nil {
 		return err.Error()
 	}
@@ -35,12 +49,12 @@ func (s *TunnelService) RunCommands(cmd string) string {
 }
 
 func (s *TunnelService) RunTunnelLogin() string {
-	cloudflared, err := getCloudflaredPath()
+	cloudflared, err := ensureCloudflared()
 	if err != nil {
 		return err.Error()
 	}
 
-	out, err := exec.Command(
+	out, err := newHiddenCommand(
 		cloudflared,
 		"tunnel",
 		"login",
@@ -54,25 +68,69 @@ func (s *TunnelService) RunTunnelLogin() string {
 }
 
 func getCloudflaredPath() (string, error) {
-	exe, err := os.Executable()
+	base, err := os.UserCacheDir()
 	if err != nil {
 		return "", err
 	}
 
-	appDir := filepath.Dir(exe)
+	runtimeDir := filepath.Join(
+		base,
+		"TunnelPilot",
+		"runtime",
+	)
 
-	var path string
-
-	if stdruntime.GOOS == "windows" {
-		path = filepath.Join(appDir, "cloudflared.exe")
-	} else {
-		path = filepath.Join(appDir, "cloudflared")
+	if err := os.MkdirAll(runtimeDir, 0755); err != nil {
+		return "", fmt.Errorf(
+			"failed to create runtime directory: %w",
+			err,
+		)
 	}
 
-	if _, err := os.Stat(path); err != nil {
+	return filepath.Join(runtimeDir, "cloudflared.exe"), nil
+}
+
+func ensureCloudflared() (string, error) {
+	path, err := getCloudflaredPath()
+	if err != nil {
+		return "", err
+	}
+
+	// Already downloaded.
+	if _, err := os.Stat(path); err == nil {
+		return path, nil
+	}
+
+	const url = "https://github.com/cloudflare/cloudflared/releases/download/2026.9.3/cloudflared-windows-amd64.exe"
+
+	resp, err := http.Get(url)
+	if err != nil {
 		return "", fmt.Errorf(
-			"cloudflared not found at %s",
-			path,
+			"failed to download cloudflared: %w",
+			err,
+		)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf(
+			"cloudflared download returned HTTP %d",
+			resp.StatusCode,
+		)
+	}
+
+	file, err := os.Create(path)
+	if err != nil {
+		return "", fmt.Errorf(
+			"failed to create cloudflared: %w",
+			err,
+		)
+	}
+	defer file.Close()
+
+	if _, err := io.Copy(file, resp.Body); err != nil {
+		return "", fmt.Errorf(
+			"failed to save cloudflared: %w",
+			err,
 		)
 	}
 
@@ -120,7 +178,7 @@ func (s *TunnelService) CheckIsLoggedIn() bool {
 }
 
 func (s *TunnelService) RunTunnelCreate(port string) int {
-	cloudflared, err := getCloudflaredPath()
+	cloudflared, err := ensureCloudflared()
 	if err != nil {
 		s.event.Emit(
 			"tunnel-log",
@@ -130,7 +188,7 @@ func (s *TunnelService) RunTunnelCreate(port string) int {
 		return 0
 	}
 
-	cmd := exec.Command(
+	cmd := newHiddenCommand(
 		cloudflared,
 		"tunnel",
 		"--url",
@@ -236,14 +294,14 @@ func (s *TunnelService) KillAllTunnels() string {
 	var cmd *exec.Cmd
 
 	if stdruntime.GOOS == "windows" {
-		cmd = exec.Command(
+		cmd = newHiddenCommand(
 			"taskkill",
 			"/IM",
 			"cloudflared.exe",
 			"/F",
 		)
 	} else {
-		cmd = exec.Command(
+		cmd = newHiddenCommand(
 			"killall",
 			"-9",
 			"cloudflared",

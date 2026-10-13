@@ -1,3 +1,8 @@
+## required tools
+- wails v3
+- UPX
+- MSIX packaging tool
+
 ```text
 App Name:              TunnelPilot
 Package Identity Name: Harshdeepsingh.TunnelPilot
@@ -5,6 +10,13 @@ Publisher:             CN=ECC6BB33-156A-4CA5-AB9D-90DA53CEAF89
 Publisher Display:     Harshdeepsingh
 Store ID:              9NMFWT6PHT8T
 Package Family Name:   Harshdeepsingh.TunnelPilot_mjaedyhsnsee8
+```
+
+## 0. Update version
+Edit version in build/config.yml
+Run: 
+```powershell
+wails3 task common:update:build-assets
 ```
 
 ## 1. Build Wails App
@@ -18,38 +30,35 @@ Check the generated `.exe` in `bin`.
 ## 2. Compress TunnelPilot EXE
 
 ```powershell
-upx --best --lzma .\tunnelpilotv3.exe
+upx --best --lzma .\bin\tunnelpilot.exe
 ```
 
 Verify:
 
 ```powershell
-upx -t .\tunnelpilotv3.exe
+upx -t .\bin\tunnelpilot.exe
 ```
 
-## 3. create setup file using inno
-
 ## 3. Create MSIX
-
-Use **Microsoft MSIX Packaging Tool** to convert the Windows installer into an `.msix`.
-
-The MSIX must keep these Store identity values:
+```powershell
+wails3 tool msix `
+  --config ".\build\config.yml" `
+  --name "TunnelPilot.exe" `
+  --executable ".\bin\tunnelpilot.exe" `
+  --arch "amd64" `
+  --publisher "CN=ECC6BB33-156A-4CA5-AB9D-90DA53CEAF89" `
+  --out ".\bin\tunnelpilot-amd64.msix" `
+  --use-makeappx
+  ```
 
 ```text
-Name:      Harshdeepsingh.TunnelPilot
+Package Name: Harshdeepsingh.TunnelPilot
+Package Display Name: TunnelPilot
 Publisher: CN=ECC6BB33-156A-4CA5-AB9D-90DA53CEAF89
-Display:   Harshdeepsingh
+Publisher Display Name: Harshdeepsingh
 ```
 
 Set the package version to a version **higher than the currently published Store version**.
-
-Example:
-
-```text
-1.0.0.0 → 1.0.1.0
-```
-
-Do not change the package identity.
 
 ## 4. unpack the generated msix file and replace the assets folder with the assets folder we have in our dir
 

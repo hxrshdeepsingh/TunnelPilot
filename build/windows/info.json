@@ -1,15 +1,15 @@
 {
 	"fixed": {
-		"file_version": "0.1.0"
+		"file_version": "3.0.0"
 	},
 	"info": {
 		"0000": {
-			"ProductVersion": "0.1.0",
-			"CompanyName": "hxrshdeepsingh",
-			"FileDescription": "A TunnelPilotv3 application",
-			"LegalCopyright": "© 2026, hxrshdeepsingh",
-			"ProductName": "My Product",
-			"Comments": "This is a comment"
+			"ProductVersion": "3.0.0",
+			"CompanyName": "Harshdeepsingh",
+			"FileDescription": "Instantly share your local app with a public URL",
+			"LegalCopyright": "© 2026, Harshdeepsingh",
+			"ProductName": "TunnelPilot",
+			"Comments": "TunnelPilot helps developers expose local ports as public URLs using Cloudflare tunnels"
 		}
 	}
 }

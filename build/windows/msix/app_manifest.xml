@@ -10,7 +10,7 @@
   <Identity 
     Name="com.tunnelpilot.tunnelpilotv3"
     Publisher="CN=hxrshdeepsingh"
-    Version="0.1.0.0" 
+    Version="3.0.0" 
     ProcessorArchitecture="x64" />
   
   <Properties>

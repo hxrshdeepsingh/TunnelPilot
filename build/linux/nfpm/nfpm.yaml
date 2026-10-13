@@ -3,26 +3,26 @@
 #
 # The lines below are called `modelines`. See `:help modeline`
 
-name: "tunnelpilotv3.exe"
+name: "tunnelpilot"
 arch: ${GOARCH}
 platform: "linux"
-version: "0.1.0"
+version: "3.0.0"
 section: "default"
 priority: "extra"
 maintainer: ${GIT_COMMITTER_NAME} <${GIT_COMMITTER_EMAIL}>
-description: "A TunnelPilotv3 application"
-vendor: "hxrshdeepsingh"
+description: "Instantly share your local app with a public URL"
+vendor: "Harshdeepsingh"
 homepage: "https://wails.io"
 license: "MIT"
 release: "1"
 
 contents:
-  - src: "./bin/tunnelpilotv3.exe"
-    dst: "/usr/local/bin/tunnelpilotv3.exe"
+  - src: "./bin/tunnelpilot"
+    dst: "/usr/local/bin/tunnelpilot"
   - src: "./build/appicon.png"
-    dst: "/usr/share/icons/hicolor/128x128/apps/tunnelpilotv3.exe.png"
-  - src: "./build/linux/tunnelpilotv3.exe.desktop"
-    dst: "/usr/share/applications/tunnelpilotv3.exe.desktop"
+    dst: "/usr/share/icons/hicolor/128x128/apps/tunnelpilot.png"
+  - src: "./build/linux/tunnelpilot.desktop"
+    dst: "/usr/share/applications/tunnelpilot.desktop"
 
 # Default dependencies for the GTK4 + WebKitGTK 6.0 stack (Ubuntu 24.04+ / Debian 13+)
 depends:

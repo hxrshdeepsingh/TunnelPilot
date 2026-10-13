@@ -18,16 +18,23 @@ interface ActiveTunnel {
 }
 
 function App() {
-  const [cloudflaredVersion, setCloudflaredVersion] = useState("---");
+  const [cloudflaredVersion, setCloudflaredVersion] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [port, setPort] = useState("");
   const [logs, setLogs] = useState("");
   const [activeTunnels, setActiveTunnels] = useState<ActiveTunnel[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const currentPid = useRef(0);
   const currentPort = useRef("");
 
+
   useEffect(() => {
+
+    console.log(loading)
+
+    checkCloudflaredInstalled();
+
     checkCloudflaredVersion();
     checkLogin();
 
@@ -43,11 +50,22 @@ function App() {
     };
   }, []);
 
+  async function checkCloudflaredInstalled() {
+    setLoading(true);
+
+    try {
+      await checkCloudflaredVersion();
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function checkCloudflaredVersion() {
     try {
       const result = await RunCommands("--version");
 
       setCloudflaredVersion(result);
+
     } catch (error) {
       appendLog(
         "Failed to get cloudflared version: " + String(error)
@@ -287,13 +305,18 @@ function App() {
           <div className="meta">
 
             <div className="pill">
-              <span className="dot" />
-
-              <span>
-                {cloudflaredVersion}
-              </span>
+              {loading ? (
+                <>
+                  <span className="spinner" />
+                  <span>Downloading cloudflared...</span>
+                </>
+              ) : (
+                <>
+                  <span className="dot" />
+                  <span>{cloudflaredVersion}</span>
+                </>
+              )}
             </div>
-
             {!isLoggedIn ? (
               <button
                 className="btn primary"

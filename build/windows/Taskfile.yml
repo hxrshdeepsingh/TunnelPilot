@@ -141,7 +141,7 @@ tasks:
     cmds:
       - |-
         wails3 tool msix \
-          --config "{{.ROOT_DIR}}/wails.json" \
+          --config "{{.ROOT_DIR}}/build/config.yml" \
           --name "{{.APP_NAME}}" \
           --executable "{{.ROOT_DIR}}/{{.BIN_DIR}}/{{.APP_NAME}}.exe" \
           --arch "{{.ARCH}}" \
@@ -153,7 +153,7 @@ tasks:
       ARCH: '{{.ARCH | default ARCH}}'
       CERT_PATH: '{{.CERT_PATH | default ""}}'
       PUBLISHER: '{{.PUBLISHER | default ""}}'
-      USE_MSIX_TOOL: '{{.USE_MSIX_TOOL | default "false"}}'
+      USE_MSIX_TOOL: 'false'
 
   install:msix:tools:
     summary: Installs tools required for MSIX packaging

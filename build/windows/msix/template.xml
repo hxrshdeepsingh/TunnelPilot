@@ -13,12 +13,12 @@
         InstallLocation="C:\Program Files\hxrshdeepsingh\My Product">
     </Installer>
     <PackageInformation
-        PackageName="My Product"
-        PackageDisplayName="My Product"
+        PackageName="TunnelPilot"
+        PackageDisplayName="TunnelPilot"
         PublisherName="CN=hxrshdeepsingh"
         PublisherDisplayName="hxrshdeepsingh"
-        Version="0.1.0.0"
-        PackageDescription="A TunnelPilotv3 application">
+        Version="3.0.0"
+        PackageDescription="Make your local projects publicly accessible in seconds. Create a shareable URL for your localhost without deploying your app.">
         <Capabilities>
             <Capability Name="runFullTrust" />
             
@@ -26,8 +26,8 @@
         <Applications>
             <Application
                 Id="com.tunnelpilot.tunnelpilotv3"
-                Description="A TunnelPilotv3 application"
-                DisplayName="My Product"
+                Description="Make your local projects publicly accessible in seconds. Create a shareable URL for your localhost without deploying your app."
+                DisplayName="TunnelPilot"
                 ExecutableName="tunnelpilotv3.exe"
                 EntryPoint="Windows.FullTrustApplication">
                 
@@ -41,9 +41,9 @@
         </Dependencies>
         <Properties>
             <Framework>false</Framework>
-            <DisplayName>My Product</DisplayName>
+            <DisplayName>TunnelPilot</DisplayName>
             <PublisherDisplayName>hxrshdeepsingh</PublisherDisplayName>
-            <Description>A TunnelPilotv3 application</Description>
+            <Description>Make your local projects publicly accessible in seconds. Create a shareable URL for your localhost without deploying your app.</Description>
             <Logo>Assets\AppIcon.png</Logo>
         </Properties>
     </PackageInformation>

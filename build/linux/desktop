@@ -1,13 +1,13 @@
 [Desktop Entry]
 Version=1.0
-Name=My Product
-Comment=A TunnelPilotv3 application
+Name=TunnelPilot
+Comment=Instantly share your local app with a public URL
 # The Exec line includes %u to pass the URL to the application
-Exec=/usr/local/bin/tunnelpilotv3.exe %u
+Exec=/usr/local/bin/tunnelpilot %u
 Terminal=false
 Type=Application
-Icon=tunnelpilotv3.exe
+Icon=tunnelpilot
 Categories=Utility;
-StartupWMClass=tunnelpilotv3.exe
+StartupWMClass=tunnelpilot
 
  
