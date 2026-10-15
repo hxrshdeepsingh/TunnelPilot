@@ -1,3 +1,5 @@
+<img src="assets/logo.svg" alt="TunnelPilot logo" width="50" height="50" style="border-radius: 10%;"/>
+
 # TunnelPilot
 
 TunnelPilot helps developers turn a local application into a publicly accessible link in just a few clicks.
@@ -10,13 +12,13 @@ TunnelPilot helps developers turn a local application into a publicly accessible
       <td align="left" valign="middle">
         <strong>for Windows</strong><br/><br/>
         <a href="https://get.microsoft.com/installer/download/9nmfwt6pht8t?referrer=appbadge">
-          <img src="https://get.microsoft.com/images/en-us%20light.svg" width="200" alt="Get it from Microsoft Store" />
+          <img src="https://get.microsoft.com/images/en-us%20light.svg" width="200" height="55" alt="Get it from Microsoft Store" >
         </a>
       </td>
       <td align="left" valign="middle">
         <strong>for Linux</strong><br/><br/>
         <a href="https://snapcraft.io/tunnelpilot" target="_blank" rel="noopener noreferrer">
-          <img src="https://snapcraft.io/static/images/badges/en/snap-store-black.svg" width="200" alt="Get it from the Snap Store" />
+          <img src="https://snapcraft.io/static/images/badges/en/snap-store-black.svg" width="200" height="55" alt="Get it from the Snap Store" />
         </a>
       </td>
     </tr>
