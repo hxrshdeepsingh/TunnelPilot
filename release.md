@@ -1,3 +1,5 @@
+# Release guide
+
 ## required tools
 - wails v3
 - UPX (windows) / upx-ucl (linux)
