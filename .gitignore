@@ -11,3 +11,6 @@ build/android/gen/
 
 release.md
 installer/
+
+creds.txt
+*.snap

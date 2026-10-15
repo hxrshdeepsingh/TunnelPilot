@@ -5,7 +5,7 @@
 		<key>CFBundleDisplayName</key>
 		<string>TunnelPilot (Dev)</string>
 		<key>CFBundleExecutable</key>
-		<string>tunnelpilot</string>
+		<string/>
 		<key>CFBundleGetInfoString</key>
 		<string>TunnelPilot helps developers expose local ports as public URLs using Cloudflare tunnels</string>
 		<key>CFBundleIdentifier</key>

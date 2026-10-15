@@ -20,9 +20,17 @@ Whether you're building a website, testing an API, receiving webhooks, or showin
 * **Monitor Active Tunnels**
   View and manage your active tunnels from one place.
 
-## Microsoft Store
+## Download
 
-[Download TunnelPilot from the Microsoft Store](https://apps.microsoft.com/detail/9nmfwt6pht8t?hl=en-US&gl=IN&ocid=pdpshare)
+Download TunnelPilot from the Microsoft Store
+
+<a href="https://get.microsoft.com/installer/download/9nmfwt6pht8t?referrer=appbadge" target="_self" >
+	<img src="https://get.microsoft.com/images/en-us%20light.svg" width="200"/>
+</a>
+
+<a href="https://snapcraft.io/tunnelpilot" target="_blank">
+  <img src="https://snapcraft.io/static/images/badges/en/snap-store-black.svg"   width="200" />
+</a>
 
 ## Use Cases
 

@@ -2,15 +2,16 @@ package main
 
 import (
 	"bufio"
-	"net/http"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
 	stdruntime "runtime"
 	"sync"
-	"syscall"
+	"runtime"
+	// "syscall"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
 )
@@ -21,16 +22,22 @@ type TunnelService struct {
 	procs map[int]*exec.Cmd
 }
 
+// func newHiddenCommand(name string, args ...string) *exec.Cmd {
+// 	cmd := exec.Command(name, args...)
+
+// 	if stdruntime.GOOS == "windows" {
+// 		cmd.SysProcAttr = &syscall.SysProcAttr{
+// 			HideWindow:    true,
+// 			CreationFlags: 0x08000000,
+// 		}
+// 	}
+
+// 	return cmd
+// }
+
 func newHiddenCommand(name string, args ...string) *exec.Cmd {
 	cmd := exec.Command(name, args...)
-
-	if stdruntime.GOOS == "windows" {
-		cmd.SysProcAttr = &syscall.SysProcAttr{
-			HideWindow:    true,
-			CreationFlags: 0x08000000,
-		}
-	}
-
+	configureHiddenCommand(cmd)
 	return cmd
 }
 
@@ -89,49 +96,125 @@ func getCloudflaredPath() (string, error) {
 	return filepath.Join(runtimeDir, "cloudflared.exe"), nil
 }
 
+// func ensureCloudflared() (string, error) {
+// 	path, err := getCloudflaredPath()
+// 	if err != nil {
+// 		return "", err
+// 	}
+
+// 	// Already downloaded.
+// 	if _, err := os.Stat(path); err == nil {
+// 		return path, nil
+// 	}
+
+// 	const url = "https://github.com/cloudflare/cloudflared/releases/download/2026.9.3/cloudflared-windows-amd64.exe"
+
+// 	resp, err := http.Get(url)
+// 	if err != nil {
+// 		return "", fmt.Errorf(
+// 			"failed to download cloudflared: %w",
+// 			err,
+// 		)
+// 	}
+// 	defer resp.Body.Close()
+
+// 	if resp.StatusCode != http.StatusOK {
+// 		return "", fmt.Errorf(
+// 			"cloudflared download returned HTTP %d",
+// 			resp.StatusCode,
+// 		)
+// 	}
+
+// 	file, err := os.Create(path)
+// 	if err != nil {
+// 		return "", fmt.Errorf(
+// 			"failed to create cloudflared: %w",
+// 			err,
+// 		)
+// 	}
+// 	defer file.Close()
+
+// 	if _, err := io.Copy(file, resp.Body); err != nil {
+// 		return "", fmt.Errorf(
+// 			"failed to save cloudflared: %w",
+// 			err,
+// 		)
+// 	}
+
+// 	return path, nil
+// }
+
+
 func ensureCloudflared() (string, error) {
 	path, err := getCloudflaredPath()
 	if err != nil {
 		return "", err
 	}
 
-	// Already downloaded.
-	if _, err := os.Stat(path); err == nil {
-		return path, nil
+	// Select the correct release asset for the current OS and architecture.
+	var url string
+
+	switch runtime.GOOS {
+	case "windows":
+		if runtime.GOARCH != "amd64" {
+			return "", fmt.Errorf("unsupported Windows architecture: %s", runtime.GOARCH)
+		}
+		url = "https://github.com/cloudflare/cloudflared/releases/download/2026.9.3/cloudflared-windows-amd64.exe"
+
+	case "linux":
+		switch runtime.GOARCH {
+		case "amd64":
+			url = "https://github.com/cloudflare/cloudflared/releases/download/2026.9.3/cloudflared-linux-amd64"
+		case "arm64":
+			url = "https://github.com/cloudflare/cloudflared/releases/download/2026.9.3/cloudflared-linux-arm64"
+		default:
+			return "", fmt.Errorf("unsupported Linux architecture: %s", runtime.GOARCH)
+		}
+
+	default:
+		return "", fmt.Errorf("unsupported operating system: %s", runtime.GOOS)
 	}
 
-	const url = "https://github.com/cloudflare/cloudflared/releases/download/2026.9.3/cloudflared-windows-amd64.exe"
+	// Reuse the cached binary only if it exists and is usable.
+	if info, err := os.Stat(path); err == nil && !info.IsDir() {
+		if runtime.GOOS != "linux" || info.Mode()&0111 != 0 {
+			return path, nil
+		}
+	}
 
 	resp, err := http.Get(url)
 	if err != nil {
-		return "", fmt.Errorf(
-			"failed to download cloudflared: %w",
-			err,
-		)
+		return "", fmt.Errorf("failed to download cloudflared: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf(
-			"cloudflared download returned HTTP %d",
-			resp.StatusCode,
-		)
+		return "", fmt.Errorf("cloudflared download returned HTTP %d", resp.StatusCode)
 	}
 
-	file, err := os.Create(path)
+	file, err := os.OpenFile(path, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0755)
 	if err != nil {
-		return "", fmt.Errorf(
-			"failed to create cloudflared: %w",
-			err,
-		)
+		return "", fmt.Errorf("failed to create cloudflared: %w", err)
 	}
-	defer file.Close()
 
-	if _, err := io.Copy(file, resp.Body); err != nil {
-		return "", fmt.Errorf(
-			"failed to save cloudflared: %w",
-			err,
-		)
+	_, copyErr := io.Copy(file, resp.Body)
+	closeErr := file.Close()
+
+	if copyErr != nil {
+		_ = os.Remove(path)
+		return "", fmt.Errorf("failed to save cloudflared: %w", copyErr)
+	}
+	if closeErr != nil {
+		_ = os.Remove(path)
+		return "", fmt.Errorf("failed to close cloudflared: %w", closeErr)
+	}
+
+	// Linux needs executable permissions to launch the downloaded binary.
+	if runtime.GOOS == "linux" {
+		if err := os.Chmod(path, 0755); err != nil {
+			_ = os.Remove(path)
+			return "", fmt.Errorf("failed to set cloudflared executable permissions: %w", err)
+		}
 	}
 
 	return path, nil
@@ -196,11 +279,11 @@ func (s *TunnelService) RunTunnelCreate(port string) int {
 	)
 
 	// Hide the console window on Windows.
-	if stdruntime.GOOS == "windows" {
-		cmd.SysProcAttr = &syscall.SysProcAttr{
-			HideWindow: true,
-		}
-	}
+	// if stdruntime.GOOS == "windows" {
+	// 	cmd.SysProcAttr = &syscall.SysProcAttr{
+	// 		HideWindow: true,
+	// 	}
+	// }
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {

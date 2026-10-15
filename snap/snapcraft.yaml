@@ -1,0 +1,49 @@
+name: tunnelpilot
+base: core24
+version: '3.0.0'
+summary: Share your localhost with a public URL in seconds
+description: |
+  No deployment. No complicated configuration. Just choose your local
+  port, start a tunnel, and share the generated public URL.
+grade: stable
+confinement: strict
+title: TunnelPilot
+license: MIT
+contact: ishu.cxx@gmail.com
+website: https://github.com/hxrshdeepsingh/TunnelPilot
+source-code: https://github.com/hxrshdeepsingh/TunnelPilot
+issues: https://github.com/hxrshdeepsingh/TunnelPilot/issues
+
+layout:
+  /usr/lib/x86_64-linux-gnu/webkitgtk-6.0:
+    bind: $SNAP/usr/lib/x86_64-linux-gnu/webkitgtk-6.0
+
+apps:
+  tunnelpilot:
+    command: bin/tunnelpilot
+    extensions: [gnome]
+    plugs:
+      - network
+      - home
+      - desktop
+      - desktop-legacy
+      - wayland
+      - x11
+      - opengl
+    environment:
+      WEBKIT_DISABLE_SANDBOX_THIRD_PARTY: "1"
+
+parts:
+  app:
+    plugin: dump
+    source: ./bin
+    organize:
+      tunnelpilot: bin/tunnelpilot
+    stage:
+      - bin/tunnelpilot
+
+  libs:
+    plugin: nil
+    stage-packages:
+      - libwebkitgtk-6.0-4
+      - libjavascriptcoregtk-6.0-1

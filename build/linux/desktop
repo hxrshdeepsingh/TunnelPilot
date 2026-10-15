@@ -3,11 +3,11 @@ Version=1.0
 Name=TunnelPilot
 Comment=Instantly share your local app with a public URL
 # The Exec line includes %u to pass the URL to the application
-Exec=/usr/local/bin/tunnelpilot %u
+Exec=/usr/local/bin/ %u
 Terminal=false
 Type=Application
-Icon=tunnelpilot
+Icon=
 Categories=Utility;
-StartupWMClass=tunnelpilot
+StartupWMClass=
 
  

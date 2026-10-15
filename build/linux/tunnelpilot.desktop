@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=tunnelpilot
+Exec=tunnelpilot
+Icon=tunnelpilot
+Categories=Development;
+Terminal=false
+Keywords=wails
+Version=1.0
+StartupNotify=false

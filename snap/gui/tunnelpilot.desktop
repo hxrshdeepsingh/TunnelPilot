@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=TunnelPilot
+Exec=tunnelpilot
+Icon=${SNAP}/meta/gui/tunnelpilot.png
+Type=Application
+Categories=Network;Utility;
+Terminal=false
